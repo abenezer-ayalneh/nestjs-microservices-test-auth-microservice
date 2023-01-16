@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: { sub: number, email: string }) {
         const user = await this.prisma.user.findUnique({ where: { id: payload.sub } })
-        delete user.hash
+        delete user.accessToken
         return user;
     }
 }
