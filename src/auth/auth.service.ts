@@ -1,17 +1,18 @@
-import { ForbiddenException, Injectable, UsePipes, ValidationPipe } from "@nestjs/common";
+import { ForbiddenException, Injectable, Res } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import * as argon from "argon2";
-import { SignUpDto } from "./dto";
+import { SignUpWithEmailDTO, SignInWithEmailDTO, SignUpWithPhoneNumberDTO } from "./dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { SignInDto } from "./dto/sign-in.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { RpcException } from "@nestjs/microservices";
 
 @Injectable({})
 export class AuthService {
   constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) { }
 
-  async signUp(signUpRequest: SignUpDto) {
+  // Auth with Email
+  async signUpWithEmail(signUpRequest: SignUpWithEmailDTO) {
     // generate has for the password
     const token = await argon.hash(signUpRequest.password);
 
@@ -29,7 +30,7 @@ export class AuthService {
       if (exception instanceof PrismaClientKnownRequestError) {
         switch (exception.code) {
           case "P2002":
-            throw new ForbiddenException("Credential taken");
+            throw new RpcException("Entry exists on the system")
           default:
             throw exception;
         }
@@ -37,7 +38,7 @@ export class AuthService {
     }
   }
 
-  async signIn(signInRequest: SignInDto) {
+  async signInWithEmail(signInRequest: SignInWithEmailDTO) {
     const user = await this.prisma.user.findUnique({
       where: {
         email: signInRequest.email,
@@ -45,18 +46,19 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ForbiddenException("Credentials incorrect");
+      throw new RpcException("User not found");
     }
 
     const passwordMatches = await argon.verify(user.accessToken, signInRequest.password);
 
     if (!passwordMatches) {
-      throw new ForbiddenException("Credentials incorrect");
+      throw new RpcException("Credential is incorrect");
     }
 
     return this.signToken(user.id, user.email);
   }
 
+  // JWT token generator
   async signToken(userID: number, email: string): Promise<{ access_token: string }> {
     const payload = {
       sub: userID,
@@ -70,6 +72,32 @@ export class AuthService {
 
     return {
       access_token: token
+    }
+  }
+
+  // Auth with Phone Number
+  async signUpWithPhoneNumber(signUpRequest: SignUpWithPhoneNumberDTO){
+    const token = await argon.hash(signUpRequest.phoneNumber);
+
+    // create the user on DB
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          phoneNumber: signUpRequest.phoneNumber,
+          accessToken: token
+        },
+      });
+
+      return await this.signToken(user.id, user.phoneNumber);
+    } catch (exception) {
+      if (exception instanceof PrismaClientKnownRequestError) {
+        switch (exception.code) {
+          case "P2002":
+            throw new RpcException("Entry exists on the system")
+          default:
+            throw exception;
+        }
+      }
     }
   }
 }
