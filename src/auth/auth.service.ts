@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import * as argon from 'argon2';
-import {
-  SignUpWithEmailDTO,
-  SignInWithEmailDTO,
-  SignUpWithPhoneNumberDTO,
-} from './dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import * as argon from 'argon2';
 import * as firebase from 'firebase-admin';
+import { PrismaService } from '../prisma/prisma.service';
+import {
+  SignInWithEmailDTO,
+  SignUpWithEmailDTO,
+  SignUpWithPhoneNumberDTO
+} from './dto';
 import * as serviceAccount from './firebaseServiceAccount.json';
 
 const firebase_params = {
@@ -32,7 +32,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-    private config: ConfigService,
+    private config: ConfigService
   ) {
     this.firebaseApp = firebase.initializeApp({
       credential: firebase.credential.cert(firebase_params),
@@ -61,7 +61,10 @@ export class AuthService {
       if (exception instanceof PrismaClientKnownRequestError) {
         switch (exception.code) {
           case 'P2002':
-            throw new RpcException('Entry exists on the system');
+            throw new RpcException({
+              message: 'Entry exists on the system',
+              code: '',
+            });
           default:
             throw exception;
         }
@@ -82,7 +85,7 @@ export class AuthService {
 
     const passwordMatches = await argon.verify(
       user.accessToken,
-      signInRequest.password,
+      signInRequest.password
     );
 
     if (!passwordMatches) {
