@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   SignInWithEmailDTO,
   SignUpWithEmailDTO,
-  SignUpWithPhoneNumberDTO
+  SignUpWithPhoneNumberDTO,
 } from './dto';
 import * as serviceAccount from './firebaseServiceAccount.json';
 
