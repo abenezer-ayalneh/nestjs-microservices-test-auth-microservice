@@ -10,7 +10,7 @@ async function bootstrap() {
       options: {
         port: 3001,
       },
-    },
+    }
   );
 
   app.listen();

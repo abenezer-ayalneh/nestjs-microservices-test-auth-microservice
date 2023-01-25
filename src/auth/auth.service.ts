@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
@@ -62,12 +62,20 @@ export class AuthService {
         switch (exception.code) {
           case 'P2002':
             throw new RpcException({
-              message: 'Entry exists on the system',
-              code: '',
+              message: 'Entry exists on the system. Try signing in',
+              code: HttpStatus.UNPROCESSABLE_ENTITY,
             });
           default:
-            throw exception;
+            throw new RpcException({
+              message: exception.message,
+              code: 400,
+            });
         }
+      } else {
+        throw new RpcException({
+          message: exception.message,
+          code: 400,
+        });
       }
     }
   }
@@ -80,7 +88,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new RpcException('User not found');
+      throw new RpcException({
+        message: 'User not found',
+        code: HttpStatus.UNPROCESSABLE_ENTITY,
+      });
     }
 
     const passwordMatches = await argon.verify(
@@ -89,7 +100,10 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
-      throw new RpcException('Credential is incorrect');
+      throw new RpcException({
+        message: 'Credential is incorrect',
+        code: HttpStatus.UNPROCESSABLE_ENTITY,
+      });
     }
 
     return this.signToken({
@@ -99,7 +113,7 @@ export class AuthService {
   }
 
   // JWT token generator
-  async signToken(payload: {}): Promise<{ accessToken: string }> {
+  async signToken(payload: object): Promise<{ accessToken: string }> {
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '15m',
       secret: this.config.get('JWT_SECRET'),
@@ -154,6 +168,11 @@ export class AuthService {
           default:
             throw error;
         }
+      } else {
+        throw new RpcException({
+          message: error.message,
+          code: 400,
+        });
       }
     }
   }
