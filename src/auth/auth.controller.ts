@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import {
   SignInWithEmailDTO,
   SignUpWithEmailDTO,
-  SignUpWithPhoneNumberDTO,
+  SignUpWithPhoneNumberDTO
 } from './dto';
 
 @Controller()
@@ -12,6 +12,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   // Auth with Email
+  // @UseFilters(new CustomRpcExceptionFilter())
   @MessagePattern({ cmd: 'userSignUpWithEmail' })
   signUpWithEmail(signUpRequest: SignUpWithEmailDTO) {
     return this.authService.signUpWithEmail(signUpRequest);

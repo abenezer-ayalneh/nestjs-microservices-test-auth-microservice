@@ -1,6 +1,10 @@
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import {
+  MicroserviceOptions,
+  RpcException,
+  Transport
+} from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -13,10 +17,21 @@ async function bootstrap() {
       },
     }
   );
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      exceptionFactory: (errors: ValidationError[]) => {
+        return errors.map((error) => {
+          throw new RpcException({
+            message: error.constraints
+              ? Object.values(error.constraints)[0]
+              : null,
+            code: HttpStatus.UNPROCESSABLE_ENTITY,
+            errors: error.constraints ? Object.values(error.constraints) : null,
+          });
+        });
+      },
     })
   );
   app.listen();

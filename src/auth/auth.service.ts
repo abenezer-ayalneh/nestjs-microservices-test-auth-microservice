@@ -9,22 +9,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   SignInWithEmailDTO,
   SignUpWithEmailDTO,
-  SignUpWithPhoneNumberDTO,
+  SignUpWithPhoneNumberDTO
 } from './dto';
-import * as serviceAccount from './firebaseServiceAccount.json';
-
-const firebase_params = {
-  type: serviceAccount.type,
-  projectId: serviceAccount.project_id,
-  privateKeyId: serviceAccount.private_key_id,
-  privateKey: serviceAccount.private_key,
-  clientEmail: serviceAccount.client_email,
-  clientId: serviceAccount.client_id,
-  authUri: serviceAccount.auth_uri,
-  tokenUri: serviceAccount.token_uri,
-  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url,
-};
 
 @Injectable({})
 export class AuthService {
@@ -35,7 +21,11 @@ export class AuthService {
     private config: ConfigService
   ) {
     this.firebaseApp = firebase.initializeApp({
-      credential: firebase.credential.cert(firebase_params),
+      credential: firebase.credential.cert({
+        projectId: config.get('PROJECT_ID'),
+        privateKey: config.get('PRIVATE_KEY'),
+        clientEmail: config.get('CLIENT_EMAIL'),
+      }),
     });
   }
 
