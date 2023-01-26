@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import {
   MicroserviceOptions,
   RpcException,
-  Transport
+  Transport,
 } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 

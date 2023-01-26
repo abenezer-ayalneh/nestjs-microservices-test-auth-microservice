@@ -6,12 +6,12 @@ import { JwtGuard } from '../auth/guards';
 
 @Controller()
 export class UserController {
-    // @UseGuards(JwtGuard)
-    @MessagePattern({ cmd: 'me' })
-    // me() {
-    //     return new RpcException("This is an RCP exception");
-    // }
-    me(@GetUser() user: User) {
-        return user;
-    }
+  // @UseGuards(JwtGuard)
+  @MessagePattern({ cmd: 'me' })
+  // me() {
+  //     return new RpcException("This is an RCP exception");
+  // }
+  me(@GetUser() user: User) {
+    return user;
+  }
 }

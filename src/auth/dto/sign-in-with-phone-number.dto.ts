@@ -1,4 +1,4 @@
-import { IsEmail, IsMobilePhone, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsMobilePhone, IsNotEmpty, IsString } from 'class-validator';
 
 export class SignInWithPhoneNumberDTO {
   @IsMobilePhone()

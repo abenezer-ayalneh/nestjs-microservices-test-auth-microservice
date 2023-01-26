@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import {
   SignInWithEmailDTO,
   SignUpWithEmailDTO,
-  SignUpWithPhoneNumberDTO
+  SignUpWithPhoneNumberDTO,
 } from './dto';
 
 @Controller()
