@@ -123,11 +123,13 @@ export class AuthService {
       tokenVerificationResult = await this.firebaseApp
         .auth()
         .verifyIdToken(signUpRequest.accessToken);
+
+      console.log(tokenVerificationResult);
+
       token = await argon.hash(tokenVerificationResult.user_id);
 
       const user = await this.prisma.user.create({
         data: {
-          phoneNumber: signUpRequest.phoneNumber,
           accessToken: token,
         },
       });
@@ -144,7 +146,7 @@ export class AuthService {
             // TODO sign the user in rather than creating a new user
             const user = await this.prisma.user.update({
               where: {
-                phoneNumber: signUpRequest.phoneNumber,
+                phoneNumber: tokenVerificationResult.phone_number,
               },
               data: {
                 updatedAt: new Date(),
