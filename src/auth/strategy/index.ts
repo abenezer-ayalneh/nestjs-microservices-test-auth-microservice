@@ -1,1 +1,1 @@
-export * from './auth.strategy';
+export { JwtStrategy } from './auth.strategy';
