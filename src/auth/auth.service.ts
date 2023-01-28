@@ -46,6 +46,7 @@ export class AuthService {
       return await this.signToken({
         sub: user.id,
         email: user.email,
+        phoneNumber: user.phoneNumber,
       });
     } catch (exception) {
       if (exception instanceof PrismaClientKnownRequestError) {
@@ -99,13 +100,18 @@ export class AuthService {
     return this.signToken({
       sub: user.id,
       email: user.email,
+      phoneNumber: user.phoneNumber,
     });
   }
 
   // JWT token generator
-  async signToken(payload: object): Promise<{ accessToken: string }> {
+  async signToken(payload: {
+    sub: number;
+    email: string;
+    phoneNumber: string;
+  }): Promise<{ accessToken: string }> {
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: `${this.config.get('JWT_TTL')}m`,
       secret: this.config.get('JWT_SECRET'),
     });
 
@@ -124,8 +130,6 @@ export class AuthService {
         .auth()
         .verifyIdToken(signUpRequest.accessToken);
 
-      console.log(tokenVerificationResult);
-
       token = await argon.hash(tokenVerificationResult.user_id);
 
       const user = await this.prisma.user.create({
@@ -136,10 +140,10 @@ export class AuthService {
 
       return await this.signToken({
         sub: user.id,
+        email: user.email,
         phoneNumber: user.phoneNumber,
       });
     } catch (error) {
-      console.error({ verifyIdTokenError: error });
       if (error instanceof PrismaClientKnownRequestError) {
         switch (error.code) {
           case 'P2002':
@@ -155,6 +159,7 @@ export class AuthService {
 
             return await this.signToken({
               sub: user.id,
+              email: user.email,
               phoneNumber: user.phoneNumber,
             });
           default:
