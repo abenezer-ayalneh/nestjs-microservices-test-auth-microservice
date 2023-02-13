@@ -27,7 +27,7 @@ async function bootstrap() {
             message: error.constraints
               ? Object.values(error.constraints)[0]
               : null,
-            code: HttpStatus.UNPROCESSABLE_ENTITY,
+            statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
             errors: error.constraints ? Object.values(error.constraints) : null,
           });
         });

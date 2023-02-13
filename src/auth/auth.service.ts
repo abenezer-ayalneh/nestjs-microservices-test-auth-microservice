@@ -54,18 +54,18 @@ export class AuthService {
           case 'P2002':
             throw new RpcException({
               message: 'Entry exists on the system. Try signing in',
-              code: HttpStatus.UNPROCESSABLE_ENTITY,
+              statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
             });
           default:
             throw new RpcException({
               message: exception.message,
-              code: 400,
+              statusCode: 400,
             });
         }
       } else {
         throw new RpcException({
           message: exception.message,
-          code: 400,
+          statusCode: 400,
         });
       }
     }
@@ -81,7 +81,7 @@ export class AuthService {
     if (!user) {
       throw new RpcException({
         message: 'User not found',
-        code: HttpStatus.UNPROCESSABLE_ENTITY,
+        statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       });
     }
 
@@ -93,7 +93,7 @@ export class AuthService {
     if (!passwordMatches) {
       throw new RpcException({
         message: 'Credential is incorrect',
-        code: HttpStatus.UNPROCESSABLE_ENTITY,
+        statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       });
     }
 
@@ -168,7 +168,7 @@ export class AuthService {
       } else {
         throw new RpcException({
           message: error.message,
-          code: 400,
+          statusCode: 400,
         });
       }
     }
