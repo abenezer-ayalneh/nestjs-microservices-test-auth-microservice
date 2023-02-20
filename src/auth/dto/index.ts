@@ -1,4 +1,5 @@
-export { SignUpWithEmailDTO } from './sign-up-with-email.dto';
-export { SignInWithEmailDTO } from './sign-in-with-email.dto';
-export { SignUpWithPhoneNumberDTO } from './sign-up-with-phone-number.dto';
-export { SignInWithPhoneNumberDTO } from './sign-in-with-phone-number.dto';
+export {
+  SignUpWithEmailDTO,
+  SignInWithEmailDTO,
+} from './sign-with-email.request';
+export { SignUpWithPhoneNumberDTO } from './sign-with-phone-number.request';
