@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package user;
+
+service UserGrpcService {
+  rpc StoreUser (StoreUserRequest) returns (StoreUserReturn) {}
+}
+
+message StoreUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message StoreUserReturn {
+  string id = 1;
+  string email = 2;
+
+}

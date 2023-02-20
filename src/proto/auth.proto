@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthGrpcService {
+  rpc Hello (HelloName) returns (HelloReturn) {}
+  rpc SignUpWithEmail (SignUpWithEmailRequest) returns (SignUpWithEmailReturn) {}
+  rpc SignInWithEmail (SignUpWithEmailRequest) returns (SignUpWithEmailReturn) {}
+}
+
+message HelloName {
+  string helloName = 1;
+}
+
+message HelloReturn {
+  string helloReturn = 1;
+}
+
+message SignUpWithEmailRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message SignUpWithEmailReturn {
+  string accessToken = 1;
+}

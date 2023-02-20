@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
 import * as firebase from 'firebase-admin';
+import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   SignInWithEmailDTO,
@@ -12,13 +13,19 @@ import {
   SignUpWithPhoneNumberDTO,
 } from './dto';
 
+interface UserGrpcService {
+  storeUser(data: { email: string; password: string }): Observable<any>;
+}
+
 @Injectable({})
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private firebaseApp: any;
+  private userGrpcService: UserGrpcService;
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-    private config: ConfigService
+    private config: ConfigService,
+    @Inject('USER_CLIENT') private userClient: ClientGrpc
   ) {
     this.firebaseApp = firebase.initializeApp({
       credential: firebase.credential.cert({
@@ -29,13 +36,18 @@ export class AuthService {
     });
   }
 
+  onModuleInit() {
+    this.userGrpcService =
+      this.userClient.getService<UserGrpcService>('UserGrpcService');
+  }
+
   // Auth with Email
   async signUpWithEmail(signUpRequest: SignUpWithEmailDTO) {
-    // generate has for the password
     const token = await argon.hash(signUpRequest.password);
 
     // create the user on DB
     try {
+      // const user: User = { id: 1 };
       const user = await this.prisma.user.create({
         data: {
           email: signUpRequest.email,

@@ -6,14 +6,16 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { AppModule } from './app.module';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.GRPC,
       options: {
-        port: 3001,
+        package: 'auth',
+        protoPath: join(__dirname, 'proto/auth.proto'),
       },
     }
   );

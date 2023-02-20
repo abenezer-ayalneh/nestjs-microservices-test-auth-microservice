@@ -7,9 +7,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB: nestjs-microservices-test
+      POSTGRES_DB: auth
     networks:
-      - freecodecamp
+      - ablaze
 
 networks:
-  freecodecamp:
+  ablaze:
