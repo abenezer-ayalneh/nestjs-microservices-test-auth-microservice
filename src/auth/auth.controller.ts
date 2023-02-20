@@ -23,8 +23,8 @@ export class AuthController {
   }
 
   // Auth with Phone Number
-  // @GrpcMethod('AuthGrpcService', 'SignUpWithPhoneNumber')
-  // signUpWithPhoneNumber(signUpRequest: SignUpWithPhoneNumberDTO) {
-  //   return this.authService.signUpWithPhoneNumber(signUpRequest);
-  // }
+  @GrpcMethod('AuthGrpcService', 'SignUpWithPhoneNumber')
+  signUpWithPhoneNumber(signUpRequest: SignUpWithPhoneNumberDTO) {
+    return this.authService.signUpWithPhoneNumber(signUpRequest);
+  }
 }

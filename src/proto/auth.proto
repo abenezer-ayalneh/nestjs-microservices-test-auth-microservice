@@ -6,6 +6,7 @@ service AuthGrpcService {
   rpc Hello (HelloName) returns (HelloReturn) {}
   rpc SignUpWithEmail (SignUpWithEmailRequest) returns (SignUpWithEmailReturn) {}
   rpc SignInWithEmail (SignUpWithEmailRequest) returns (SignUpWithEmailReturn) {}
+  rpc SignUpWithPhoneNumber (SignUpWithPhoneNumberRequest) returns (SignUpWithPhoneNumberReturn) {}
 }
 
 message HelloName {
@@ -22,5 +23,13 @@ message SignUpWithEmailRequest {
 }
 
 message SignUpWithEmailReturn {
+  string accessToken = 1;
+}
+
+message SignUpWithPhoneNumberRequest {
+  string accessToken = 1;
+}
+
+message SignUpWithPhoneNumberReturn {
   string accessToken = 1;
 }
